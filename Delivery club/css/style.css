@@ -177,6 +177,13 @@ body{
     line-height: 32px;
     margin-left: 30px;
 }
+#cart-button {
+    margin-right: 15px;
+  }
+  .user-name {
+    font-weight: 700;
+    margin-right: 10px;
+  }
 .rating{
     margin-right: 26px;
     color: #FFC107;
@@ -244,6 +251,12 @@ body{
 .footer-link:not(:last-child){
     margin-right: 15px;
 }
+.footer-login {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+  }
 .social-links{
     display: flex;
     align-items: center;
@@ -359,6 +372,34 @@ body{
     font-size: 20px;
     line-height: 23px;
 }
+.close-auth {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+.modal-dialog-auth {
+    width: auto;
+}
+  
+.modal-auth-container {
+    display: flex;
+    flex-direction: column;
+}
+  .modal-auth-item {
+    margin: 20px 0;
+    display: flex;
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+  .modal-auth-item span {
+    padding-right: 8px;
+  }
+  #login {
+    margin-left: 14px;
+  }
+  .button-login {
+    margin-top: 45px;
+  }
 @media(max-width:1366px){
     .container{
         max-width: 960px;

@@ -19,13 +19,18 @@
                 </a>
                 <input type="text" class="input input-address" placeholder="Адреса доставки">
                 <div class="buttons">
-                    <button class="button button-primary">
+                    <span class="user-name"></span>
+                    <button class="button button-primary button-auth">
                         <img src="img/user.svg" alt="user" class="button-icon">
                         <span class="button-text">Увійти</span>
                     </button>
                     <button class="button" id="cart-button">
                         <img src="img/shopping-cart.svg" alt="user" class="button-icon">
                         <span class="button-text">Кошик</span>
+                    </button>
+                    <button class="button button-primary button-out">
+                        <img src="img/user.svg" alt="user" class="button-icon">
+                        <span class="button-text">Вийти</span>
                     </button>
                 </div>
             </header>
@@ -202,7 +207,7 @@
                     <!-- /.footer-block -->
                 </div>
             </footer>
-            <div class="modal">
+            <div class="modal modal-card">
                 <div class="modal-dialog">
                     <div class="modal-header">
                         <h3 class="modal-title">Кошик</h3>
@@ -274,7 +279,33 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-
+            <div class="modal modal-auth">
+                <div class="modal-dialog modal-dialog-auth">
+                    <button class="close-auth close">&times;</button>
+                    <form id="logInForm" >
+                        <fieldset class="modal-body modal-auth-form">
+                            <legend class="modal-title ">Авторизація</legend>
+                            <div class="modal-auth-container">
+                                <div class="modal-auth-item">
+                                    <span>Логін</span>
+                                    <input id="login" type="text">
+                                </div>
+                                <div class="modal-auth-item">
+                                    <label class="label-auth">
+                                        <span>Пароль</span>
+                                        <input id="password" type="password">
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="modal-footer">
+                            <div class="footer-buttons footer-login">
+                                <button class="button button-login" type="submit">Увійти</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </main>
         <script src="js/wow.min.js"></script>
         <script src="js/main.js"></script>
