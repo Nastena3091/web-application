@@ -10,6 +10,9 @@ body{
     margin:auto;
     
 }
+.hide * {
+    display: none;
+}
 .header{
     display: flex;
     align-items: center;
@@ -115,6 +118,7 @@ body{
     justify-content: space-between;
 }
 .card{
+    cursor: pointer;
     background: #FFFFFF;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
     border-radius:7px;
