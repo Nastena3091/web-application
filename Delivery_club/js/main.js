@@ -25,6 +25,7 @@ const inputSearch = document.querySelector(".input-search");
 const modalBody = document.querySelector(".modal-body");
 const modalPriceTag = document.querySelector(".modal-pricetag");
 const buttonClearCart = document.querySelector(".clear-cart");
+const passwordInput = document.querySelector("#password");
 
 let login = localStorage.getItem("gloDelivery");
 
@@ -82,7 +83,7 @@ function autorized() {
 function notAutorized() {
   function logIn(event) {
     event.preventDefault();
-    if (loginInput.value) {
+    if (loginInput.value && passwordInput.value) {
       login = loginInput.value;
       localStorage.setItem("gloDelivery", login);
       toogleModalAuth();
@@ -91,9 +92,19 @@ function notAutorized() {
       logInForm.removeEventListener("submit", logIn);
       logInForm.reset();
       checkAuth();
+    } else if (loginInput.value && !passwordInput.value) {
+      loginInput.style.borderColor = "";
+      passwordInput.style.borderColor = "#ff0000";
+      passwordInput.value = "";
+    } else if (!loginInput.value && passwordInput.value) {
+      passwordInput.style.borderColor = "";
+      loginInput.style.borderColor = "#ff0000";
+      loginInput.value = "";
     } else {
       loginInput.style.borderColor = "#ff0000";
       loginInput.value = "";
+      passwordInput.style.borderColor = "#ff0000";
+      passwordInput.value = "";
     }
   }
   buttonOut.style.display = "none";
