@@ -9,85 +9,40 @@ document.addEventListener('DOMContentLoaded', function () {
   const prevButton = document.querySelector('#prev');
   const sendButton = document.querySelector('#send');
 
-  const questions = [
-    {
-      question: 'Какого цвета бургер?',
-      answers: [
-        {
-          title: 'Стандарт',
-          url: './image/burger.png',
-        },
-        {
-          title: 'Черный',
-          url: './image/burgerBlack.png',
-        },
-      ],
-      type: 'radio',
-    },
-    {
-      question: 'Из какого мяса котлета?',
-      answers: [
-        {
-          title: 'Курица',
-          url: './image/chickenMeat.png',
-        },
-        {
-          title: 'Говядина',
-          url: './image/beefMeat.png',
-        },
-        {
-          title: 'Свинина',
-          url: './image/porkMeat.png',
-        },
-      ],
-      type: 'radio',
-    },
-    {
-      question: 'Дополнительные ингредиенты?',
-      answers: [
-        {
-          title: 'Помидор',
-          url: './image/tomato.png',
-        },
-        {
-          title: 'Огурец',
-          url: './image/cucumber.png',
-        },
-        {
-          title: 'Салат',
-          url: './image/salad.png',
-        },
-        {
-          title: 'Лук',
-          url: './image/onion.png',
-        },
-      ],
-      type: 'checkbox',
-    },
-    {
-      question: 'Добавить соус?',
-      answers: [
-        {
-          title: 'Чесночный',
-          url: './image/sauce1.png',
-        },
-        {
-          title: 'Томатный',
-          url: './image/sauce2.png',
-        },
-        {
-          title: 'Горчичный',
-          url: './image/sauce3.png',
-        },
-      ],
-      type: 'radio',
-    },
-  ];
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDFEEG0ISUDAQJfL8gJeLAqnlSAhUMoQo",
+    authDomain: "burgerquiz-c7de7.firebaseapp.com",
+    databaseURL: "https://burgerquiz-c7de7-default-rtdb.firebaseio.com",
+    projectId: "burgerquiz-c7de7",
+    storageBucket: "burgerquiz-c7de7.appspot.com",
+    messagingSenderId: "22447129051",
+    appId: "1:22447129051:web:4fcfcd09acbc6452c967fe",
+    measurementId: "G-3ESRZH72P3"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  const getData = () => {
+    formAnswers.textContent = 'LOAD';
+
+    nextButton.classList.add('d-none');
+    prevButton.classList.add('d-none');
+
+    setTimeout(() => {
+      firebase
+        .database()
+        .ref()
+        .child('questions')
+        .once('value')
+        .then((snap) => playTest(snap.val()));
+    }, 500);
+  };
 
   // обработчики событий открытия/закрытия модального окна
   btnOpenModal.addEventListener('click', () => {
     modalBlock.classList.add('d-block');
-    playTest();
+    getData();
   });
 
   closeModal.addEventListener('click', () => {
@@ -95,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // функция запуска тестирования
-  const playTest = () => {
+  const playTest = (questions) => {
     const finalAnswers = [];
     let numberQuestion = 0;
 
@@ -109,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
           'justify-content-center'
         );
         answerItem.innerHTML = `
-          <input type="${questions[index].type}" id="${answer.title}" name="answer" class="d-none">
+        <input type="${questions[index].type}" id="${answer.title}" name="answer" class="d-none" value="${answer.title}">
           <label for="${answer.title}" class="d-flex flex-column justify-content-between">
             <img class="answerImg" src=${answer.url} alt="burger">
             <span>${answer.title}</span>
@@ -165,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
           obj[`${index}_${questions[numberQuestion].question}`] = input.value;
         }
         if (numberQuestion === questions.length) {
-          obj[`Hомер телефонa`] = input.value;
+          obj[`Hомер телеонa`] = input.value;
         }
       });
       finalAnswers.push(obj);
@@ -183,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
       checkAnswer();
       numberQuestion++;
       renderQuestions(numberQuestion);
-      console.log(finalAnswers);
+      firebase.database().ref().child('contacts').push(finalAnswers);
     };
   };
 });
