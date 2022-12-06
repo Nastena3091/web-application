@@ -25,23 +25,59 @@ const inputSearch = document.querySelector(".input-search");
 const modalBody = document.querySelector(".modal-body");
 const modalPriceTag = document.querySelector(".modal-pricetag");
 const buttonClearCart = document.querySelector(".clear-cart");
-const passwordInput = document.querySelector("#password");
+const buttonSendCart = document.querySelector("#button-send");
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBZYRyR-Wquo0VpVO7dSLegXazlngG59ac",
+  authDomain: "delivery-club-d272d.firebaseapp.com",
+  databaseURL: "https://delivery-club-d272d-default-rtdb.firebaseio.com",
+  projectId: "delivery-club-d272d",
+  storageBucket: "delivery-club-d272d.appspot.com",
+  messagingSenderId: "1046727768490",
+  appId: "1:1046727768490:web:cc7a78ee809d37647153d3",
+  measurementId: "G-D55KJZX0DV"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const getData = async (url) => {
+  const response = await firebase
+    .database()
+    .ref()
+    .child(url.replace("./db/", "").replace(".json", ""))
+    .once("value")
+    .then((once) => {
+      return once.val();
+    });
+
+  return await response;
+};
+
+// const getData = async function (url) {
+//   const response = await fetch(url);
+//   if (!response.ok) {
+//     throw new Error(
+//       `Помилка за адресою ${url} статус помилки ${response.status}!`
+//     );
+//   }
+//   return await response.json();
+// };
 
 let login = localStorage.getItem("gloDelivery");
 
-const cart = [];
-
-const getData = async function (url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(
-      `Помилка за адресою ${url} статус помилки ${response.status}!`
-    );
-  }
-  return await response.json();
-};
+let cart = getLocalStorage();
 
 new WOW().init();
+
+function getLocalStorage() {
+  let task = localStorage.getItem("gloDeliveryCart");
+  if (task) {
+    return (task = JSON.parse(localStorage.getItem("gloDeliveryCart")));
+  } else {
+    return [];
+  }
+}
 
 function toggleModal() {
   modal.classList.toggle("is-open");
@@ -83,7 +119,7 @@ function autorized() {
 function notAutorized() {
   function logIn(event) {
     event.preventDefault();
-    if (loginInput.value && passwordInput.value) {
+    if (loginInput.value) {
       login = loginInput.value;
       localStorage.setItem("gloDelivery", login);
       toogleModalAuth();
@@ -92,19 +128,9 @@ function notAutorized() {
       logInForm.removeEventListener("submit", logIn);
       logInForm.reset();
       checkAuth();
-    } else if (loginInput.value && !passwordInput.value) {
-      loginInput.style.borderColor = "";
-      passwordInput.style.borderColor = "#ff0000";
-      passwordInput.value = "";
-    } else if (!loginInput.value && passwordInput.value) {
-      passwordInput.style.borderColor = "";
-      loginInput.style.borderColor = "#ff0000";
-      loginInput.value = "";
     } else {
       loginInput.style.borderColor = "#ff0000";
       loginInput.value = "";
-      passwordInput.style.borderColor = "#ff0000";
-      passwordInput.value = "";
     }
   }
   buttonOut.style.display = "none";
@@ -212,6 +238,7 @@ function openGoods(event) {
   const target = event.target;
 
   const restaraunt = target.closest(".card");
+
   if (restaraunt) {
     cardsMenu.textContent = "";
 
@@ -256,6 +283,7 @@ function addToCart(event) {
     const cost = card.querySelector(".card-price-bold").textContent;
     const id = card.id;
 
+    let cart = getLocalStorage();
     const food = cart.find(function (item) {
       return item.id === id;
     });
@@ -270,10 +298,13 @@ function addToCart(event) {
         count: 1,
       });
     }
+    localStorage.setItem("gloDeliveryCart", JSON.stringify(cart));
   }
 }
 
 function renderCart() {
+  cart = getLocalStorage();
+  console.log("cart", cart);
   modalBody.textContent = "";
 
   cart.forEach(function ({ id, title, cost, count }) {
@@ -300,11 +331,12 @@ function renderCart() {
 
 function changeCount(event) {
   const target = event.target;
-
+  cart = getLocalStorage();
   if (target.classList.contains("counter-button")) {
     const food = cart.find(function (item) {
       return item.id === target.dataset.id;
     });
+    console.log("food", cart);
     if (target.classList.contains("counter-minus")) {
       food.count--;
       if (food.count === 0) {
@@ -312,11 +344,22 @@ function changeCount(event) {
       }
     }
     if (target.classList.contains("counter-plus")) food.count++;
+    localStorage.setItem("gloDeliveryCart", JSON.stringify(cart));
     renderCart();
   }
 }
 
+function sendUserCart() {
+  cart = getLocalStorage();
+  if (cart !== []) {
+    firebase.database().ref().child("user-orders").push(cart);
+  }
+  console.log("cart", cart);
+}
+
 function init() {
+  cart;
+
   getData("./db/partners.json").then(function (data) {
     data.forEach(createCardRestaurant);
   });
@@ -328,12 +371,21 @@ function init() {
 
   buttonClearCart.addEventListener("click", function () {
     cart.length = 0;
+    localStorage.setItem("gloDeliveryCart", JSON.stringify(cart));
     renderCart();
   });
   modalBody.addEventListener("click", changeCount);
   cardsMenu.addEventListener("click", addToCart);
 
   close.addEventListener("click", toggleModal);
+
+  buttonSendCart.addEventListener("click", function () {
+    sendUserCart();
+    toggleModal();
+    cart.length = 0;
+    localStorage.setItem("gloDeliveryCart", JSON.stringify(cart));
+    renderCart();
+  });
 
   checkAuth();
 
@@ -376,10 +428,10 @@ function init() {
               menu.classList.remove("hide");
 
               starRating.classList.add("hide");
-              restarauntTitle.textContent = "Результат пошуку";
+              restarauntTitle.textContent = "Результат поиска";
               restarauntRating.textContent = "";
               restarauntPrice.textContent = "";
-              restarauntCategory.textContent = "різна кухня";
+              restarauntCategory.textContent = "разная кухня";
               resultSearch.forEach(createCardGood);
             });
           });
